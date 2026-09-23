@@ -71,7 +71,7 @@ progress{width:100%;height:7px;display:none}
 
     <div class="receipt-area">
       <label>📷 Payment receipt (optional)</label>
-      <input id="receiptInput" type="file" accept="image/*" capture="environment" onchange="handleReceipt(event)">
+      <input id="receiptInput" type="file" accept="image/*" onchange="handleReceipt(event)">
       <progress id="compressProgress" max="100"></progress>
       <img id="receiptPreview" alt="Optimized receipt preview">
       <div id="receiptMeta" class="receipt-meta">Image will be resized and compressed before IndexedDB storage.</div>
@@ -138,6 +138,7 @@ let records=[];
 let currentType="visit";
 let capturedLocation=null;
 let searchLocation=null;
+let locationWatchId=null;
 let receiptBlob=null;
 let receiptPreviewUrl=null;
 const objectUrls=new Map();
@@ -342,21 +343,43 @@ async function handleReceipt(e){
 }
 
 /* ---------- GPS ---------- */
-function captureLocation(){
-  if(!navigator.geolocation){alert("Geolocation is not supported.");return}
-  locationText.textContent="Capturing high-accuracy GPS…";
-  navigator.geolocation.getCurrentPosition(p=>{
-    capturedLocation={
-      latitude:p.coords.latitude,
-      longitude:p.coords.longitude,
-      accuracy:p.coords.accuracy,
-      capturedAt:new Date().toISOString()
+function getBestLocation(options={samples:6,maxWait:15000}){
+  return new Promise((resolve,reject)=>{
+    if(!navigator.geolocation){reject(new Error("Geolocation is not supported."));return}
+    const samples=[]; let finished=false; let timer=null;
+    const stop=()=>{
+      if(locationWatchId!==null){navigator.geolocation.clearWatch(locationWatchId);locationWatchId=null}
+      if(timer)clearTimeout(timer);
     };
-    locationText.textContent=`${capturedLocation.latitude.toFixed(6)}, ${capturedLocation.longitude.toFixed(6)} • ±${Math.round(capturedLocation.accuracy)} m`;
-  },err=>{
+    const finish=()=>{
+      if(finished)return; finished=true; stop();
+      if(!samples.length){reject(new Error("No GPS fix was received."));return}
+      samples.sort((a,b)=>(a.accuracy||Infinity)-(b.accuracy||Infinity));
+      const best=samples[0];
+      resolve({latitude:best.latitude,longitude:best.longitude,accuracy:best.accuracy,capturedAt:new Date().toISOString(),samples:samples.length});
+    };
+    try{
+      locationWatchId=navigator.geolocation.watchPosition(pos=>{
+        const c=pos.coords;
+        samples.push({latitude:c.latitude,longitude:c.longitude,accuracy:Number.isFinite(c.accuracy)?c.accuracy:9999});
+        if((c.accuracy||9999)<=10 || samples.length>=options.samples)finish();
+      },err=>{
+        if(!samples.length){finished=true;stop();reject(new Error(err.message||"Location permission/error"));}
+        else finish();
+      },{enableHighAccuracy:true,timeout:options.maxWait,maximumAge:0});
+      timer=setTimeout(finish,options.maxWait+1000);
+    }catch(e){finished=true;stop();reject(e)}
+  });
+}
+async function captureLocation(){
+  locationText.textContent="Getting several high-accuracy GPS readings…";
+  try{
+    capturedLocation=await getBestLocation({samples:6,maxWait:15000});
+    locationText.textContent=`${capturedLocation.latitude.toFixed(6)}, ${capturedLocation.longitude.toFixed(6)} • ±${Math.round(capturedLocation.accuracy)} m • ${capturedLocation.samples} readings`;
+  }catch(err){
     locationText.textContent="Location unavailable";
-    alert("Could not capture location: "+err.message+"\n\nPlease allow location permission and try again.");
-  },{enableHighAccuracy:true,timeout:30000,maximumAge:0});
+    alert("Could not capture location: "+err.message+"\n\nAllow precise location permission and try again.");
+  }
 }
 
 /* ---------- Save operations ---------- */
@@ -408,14 +431,17 @@ async function saveCurrent(){
 }
 
 /* ---------- Search ---------- */
-function getSearchLocation(){
-  if(!navigator.geolocation){alert("Geolocation is not supported.");return}
-  searchLocation.textContent="Getting your location…";
-  navigator.geolocation.getCurrentPosition(p=>{
-    searchLocation={latitude:p.coords.latitude,longitude:p.coords.longitude};
-    document.getElementById("searchLocation").textContent=`📍 ${searchLocation.latitude.toFixed(5)}, ${searchLocation.longitude.toFixed(5)}`;
+async function getSearchLocation(){
+  searchLocationEl.textContent="Getting several high-accuracy GPS readings…";
+  try{
+    const fix=await getBestLocation({samples:8,maxWait:18000});
+    searchLocation={latitude:fix.latitude,longitude:fix.longitude,accuracy:fix.accuracy};
+    searchLocationEl.textContent=`📍 ${fix.latitude.toFixed(6)}, ${fix.longitude.toFixed(6)} • ±${Math.round(fix.accuracy)} m • ${fix.samples} readings`;
     render();
-  },e=>alert("Could not get your location: "+e.message),{enableHighAccuracy:true,timeout:30000,maximumAge:0});
+  }catch(e){
+    searchLocationEl.textContent="";
+    alert("Could not get your precise location: "+e.message+"\n\nAllow precise location permission and try again.");
+  }
 }
 function distanceFilterChanged(){
   if(distanceFilter.value!=="all"&&!searchLocation){
@@ -470,6 +496,13 @@ function render(){
     }
     return true;
   });
+  if(searchLocation){
+    arr.sort((a,b)=>{
+      const da=a.location?haversine(searchLocation,a.location):Infinity;
+      const db=b.location?haversine(searchLocation,b.location):Infinity;
+      return da-db;
+    });
+  }
 
   if(!arr.length){
     list.innerHTML='<div class="card empty">No matching records.<br><small>Add a visit or sale to start your history.</small></div>';
