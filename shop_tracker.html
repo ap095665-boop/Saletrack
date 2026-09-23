@@ -4,39 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#5b5bd6">
-<title>Shop Visit & Sale Tracker</title>
+<title>Shop Tracker v2</title>
 <style>
 *{box-sizing:border-box}
-:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e4e7ec;--accent:#5b5bd6;--green:#08794f;--orange:#9a5b00;--red:#d92d20}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.app{max-width:760px;margin:auto;padding:15px 13px 90px}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
-h1{font-size:22px;margin:0 0 3px}.sub{font-size:13px;color:var(--muted)}
-button,input,select{font:inherit}button{border:0;border-radius:12px;padding:11px 13px;font-weight:750;cursor:pointer}
-.primary{background:var(--accent);color:#fff}.secondary{background:#eef0ff;color:#4545a8}.danger{background:#fff0ef;color:var(--red)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px #10182808}
-.stats{display:flex;gap:7px;margin-bottom:12px}.stat{flex:1;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}.stat b{display:block;font-size:18px}.stat span{font-size:11px;color:var(--muted)}
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e4e7ec;--accent:#5b5bd6;--accent2:#4545a8;--green:#08794f;--greenbg:#e8fff5;--orange:#9a5b00;--orangebg:#fff4df;--red:#d92d20;--redbg:#fff0ef}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100vh}.app{max-width:760px;margin:auto;padding:15px 13px calc(80px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+h1{font-size:22px;line-height:1.1;margin:0 0 4px}.sub{font-size:13px;color:var(--muted)}
+button,input,select{font:inherit}button{border:0;border-radius:12px;padding:11px 13px;font-weight:800;cursor:pointer}
+button:active{transform:scale(.98)}.primary{background:var(--accent);color:#fff}.secondary{background:#eef0ff;color:var(--accent2)}.danger{background:var(--redbg);color:var(--red)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px rgba(16,24,40,.035)}
+.stats{display:flex;gap:7px;margin-bottom:12px}.stat{flex:1;border:1px solid var(--line);border-radius:14px;padding:11px;background:#fff}.stat b{display:block;font-size:19px}.stat span{font-size:11px;color:var(--muted)}
+.section-title{font-size:12px;font-weight:900;color:#475467;text-transform:uppercase;letter-spacing:.05em}
 .form{display:grid;gap:10px}.hidden{display:none!important}
-.section-title{font-size:12px;font-weight:850;color:#475467;text-transform:uppercase;letter-spacing:.05em}
 input,select{width:100%;border:1px solid var(--line);background:#fff;border-radius:11px;padding:12px;outline:none;color:var(--text)}
-input:focus,select:focus{border-color:#8585e5;box-shadow:0 0 0 3px #5b5bd614}
+input:focus,select:focus{border-color:#8585e5;box-shadow:0 0 0 3px rgba(91,91,214,.08)}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mode button{border:2px solid var(--line);background:#fff;color:#475467}.mode button.active.visit{border-color:#e7a531;background:var(--orangebg);color:var(--orange)}.mode button.active.sale{border-color:#21aa76;background:var(--greenbg);color:var(--green)}
 .row{display:flex;gap:8px}.row>*{flex:1}
 .locbox{background:#f7f8ff;border:1px dashed #aeb3ef;border-radius:13px;padding:11px;font-size:12px;color:#525b77}
 .locbox strong{display:block;color:var(--text);font-size:13px;margin-bottom:3px}
 .receipt-area{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fafbfc}
-.receipt-area label{display:block;font-size:12px;font-weight:750;margin-bottom:7px}
+.receipt-area label{display:block;font-size:12px;font-weight:800;margin-bottom:7px}
 #receiptPreview{display:none;width:100%;max-height:190px;object-fit:contain;border-radius:10px;margin-top:9px;background:#eee}
 .receipt-meta{font-size:11px;color:var(--muted);margin-top:5px}
 .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}.search{grid-column:1/-1}
-.shop-head{display:flex;justify-content:space-between;gap:10px}.shop-name{font-weight:850;font-size:17px}
-.badge{font-size:10px;font-weight:850;padding:5px 8px;border-radius:999px;white-space:nowrap;height:max-content}
-.badge.sale{background:#e8fff5;color:var(--green)}.badge.visit{background:#fff4df;color:var(--orange)}
+.shop-head{display:flex;justify-content:space-between;gap:10px}.shop-name{font-weight:900;font-size:17px}
+.badge{font-size:10px;font-weight:900;padding:5px 8px;border-radius:999px;white-space:nowrap;height:max-content}.badge.sale{background:var(--greenbg);color:var(--green)}.badge.visit{background:var(--orangebg);color:var(--orange)}
 .meta{color:var(--muted);font-size:12px;line-height:1.55;margin-top:6px}
 .sale-info{margin-top:10px;background:#f8fafc;border-radius:12px;padding:11px;font-size:13px}.sale-info b{font-size:14px}
 .receipt-thumb{display:block;margin-top:9px;width:145px;height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
 .actions{display:flex;gap:7px;margin-top:10px}.actions button{padding:8px 10px;font-size:12px}
 .empty{text-align:center;padding:28px 14px;color:var(--muted)}
-#searchLocation{margin-top:8px}
+.statusline{font-size:12px;color:var(--muted);margin-top:7px}
+.notice{font-size:12px;padding:10px 11px;border-radius:11px;background:#f2f4f7;color:#475467}
 progress{width:100%;height:7px;display:none}
 @media(max-width:520px){.filters{grid-template-columns:1fr}.search{grid-column:auto}.row{flex-direction:column}}
 </style>
@@ -44,8 +45,8 @@ progress{width:100%;height:7px;display:none}
 <body>
 <div class="app">
 <header>
-  <div><h1>Shop Tracker</h1><div class="sub">Local visit & sale history</div></div>
-  <button class="primary" onclick="toggleForm()">＋ Add</button>
+  <div><h1>Shop Tracker</h1><div class="sub">Visits, sales & payment receipts</div></div>
+  <button class="primary" onclick="openForm()">＋ Add</button>
 </header>
 
 <div class="stats">
@@ -56,23 +57,24 @@ progress{width:100%;height:7px;display:none}
 
 <div class="card form hidden" id="formCard">
   <div class="section-title">New record</div>
+
+  <div class="mode">
+    <button id="visitMode" class="active visit" onclick="setType('visit')">👣 Visit</button>
+    <button id="saleMode" onclick="setType('sale')">💰 Sale</button>
+  </div>
+
   <input id="shopName" placeholder="Shop name *" autocomplete="off">
 
-  <select id="status" onchange="statusChanged()">
-    <option value="visited">👣 Visited</option>
-    <option value="sale">💰 Sale</option>
-  </select>
-
   <div id="saleFields" class="form hidden">
-    <input id="product" placeholder="Product name *" autocomplete="off">
-    <input id="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Sale amount (₹) *">
+    <input id="productName" placeholder="Product name *" autocomplete="off">
+    <input id="saleAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Sale amount (₹) *">
 
     <div class="receipt-area">
       <label>📷 Payment receipt (optional)</label>
-      <input id="receipt" type="file" accept="image/*" onchange="handleReceipt(event)">
+      <input id="receiptInput" type="file" accept="image/*" capture="environment" onchange="handleReceipt(event)">
       <progress id="compressProgress" max="100"></progress>
-      <img id="receiptPreview" alt="Optimized payment receipt">
-      <div id="receiptMeta" class="receipt-meta"></div>
+      <img id="receiptPreview" alt="Optimized receipt preview">
+      <div id="receiptMeta" class="receipt-meta">Image will be resized and compressed before IndexedDB storage.</div>
     </div>
   </div>
 
@@ -83,21 +85,22 @@ progress{width:100%;height:7px;display:none}
 
   <div class="row">
     <button class="secondary" type="button" onclick="captureLocation()">📍 Capture location</button>
-    <button class="primary" type="button" onclick="saveRecord()">Save record</button>
+    <button class="primary" type="button" onclick="saveCurrent()">Save <span id="saveLabel">Visit</span></button>
   </div>
-  <button class="danger" type="button" onclick="resetForm()">Cancel</button>
+  <button class="danger" type="button" onclick="closeForm()">Cancel</button>
+  <div id="formStatus" class="statusline"></div>
 </div>
 
 <div class="card">
   <div class="section-title">Find records</div>
   <div class="filters">
-    <input class="search" id="search" placeholder="🔎 Search shop or product…" oninput="render()">
+    <input class="search" id="searchInput" placeholder="🔎 Search shop or product…" oninput="render()">
     <select id="typeFilter" onchange="render()">
       <option value="all">All records</option>
-      <option value="visited">Visited</option>
-      <option value="sale">Sales</option>
+      <option value="sale">Sales only</option>
+      <option value="visit">Visits only</option>
     </select>
-    <select id="distanceFilter" onchange="render()">
+    <select id="distanceFilter" onchange="distanceFilterChanged()">
       <option value="all">All locations</option>
       <option value="1">Within 1 km</option>
       <option value="5">Within 5 km</option>
@@ -113,72 +116,195 @@ progress{width:100%;height:7px;display:none}
 </div>
 
 <div id="list"></div>
+<div id="dbNotice" class="notice hidden"></div>
 </div>
 
 <script>
-/* =========================
-   IndexedDB
-   ========================= */
-const DB_NAME="ShopTrackerDB", DB_VERSION=1, STORE="records";
-let db;
-let records=[];
-let capturedLocation=null, searchLocation=null, receiptBlob=null, receiptPreviewUrl=null;
+/* ============================================================
+   SHOP TRACKER V2
+   Architecture:
+   UI -> Controller -> Repository -> IndexedDB
+   events store = visit/sale metadata
+   receipts store = compressed Blob
+   ============================================================ */
 
-function openDB(){
-  return new Promise((resolve,reject)=>{
-    const req=indexedDB.open(DB_NAME,DB_VERSION);
-    req.onupgradeneeded=e=>{
-      const d=e.target.result;
-      if(!d.objectStoreNames.contains(STORE)){
-        const s=d.createObjectStore(STORE,{keyPath:"id"});
-        s.createIndex("status","status");
-        s.createIndex("shop","shop");
-        s.createIndex("createdAt","createdAt");
-      }
-    };
-    req.onsuccess=e=>{db=e.target.result;resolve(db)};
-    req.onerror=()=>reject(req.error);
-  });
-}
-function idbAll(){
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(STORE,"readonly"), s=tx.objectStore(STORE), req=s.getAll();
-    req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error);
-  });
-}
-function idbPut(record){
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).put(record);
-    tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
-  });
-}
-function idbDelete(id){
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).delete(id);
-    tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
-  });
-}
+const DB_NAME="ShopTrackerV2DB";
+const DB_VERSION=2;
+const EVENTS="events";
+const RECEIPTS="receipts";
+
+let db=null;
+let records=[];
+let currentType="visit";
+let capturedLocation=null;
+let searchLocation=null;
+let receiptBlob=null;
+let receiptPreviewUrl=null;
+const objectUrls=new Map();
+
+/* ---------- IndexedDB Repository ---------- */
+const DB={
+  open(){
+    return new Promise((resolve,reject)=>{
+      const req=indexedDB.open(DB_NAME,DB_VERSION);
+      req.onupgradeneeded=e=>{
+        const d=e.target.result;
+        if(!d.objectStoreNames.contains(EVENTS)){
+          const s=d.createObjectStore(EVENTS,{keyPath:"id"});
+          s.createIndex("type","type");
+          s.createIndex("shopName","shopName");
+          s.createIndex("createdAt","createdAt");
+        }
+        if(!d.objectStoreNames.contains(RECEIPTS)){
+          const s=d.createObjectStore(RECEIPTS,{keyPath:"id"});
+          s.createIndex("eventId","eventId");
+        }
+      };
+      req.onsuccess=e=>{db=e.target.result;resolve(db)};
+      req.onerror=()=>reject(req.error);
+    });
+  },
+  getEvents(){
+    return new Promise((resolve,reject)=>{
+      const r=db.transaction(EVENTS,"readonly").objectStore(EVENTS).getAll();
+      r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error);
+    });
+  },
+  getReceipt(id){
+    return new Promise((resolve,reject)=>{
+      const r=db.transaction(RECEIPTS,"readonly").objectStore(RECEIPTS).get(id);
+      r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);
+    });
+  },
+  putEvent(event){
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(EVENTS,"readwrite");
+      tx.objectStore(EVENTS).put(event);
+      tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+    });
+  },
+  putReceipt(receipt){
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(RECEIPTS,"readwrite");
+      tx.objectStore(RECEIPTS).put(receipt);
+      tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+    });
+  },
+  deleteEvent(id){
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction([EVENTS,RECEIPTS],"readwrite");
+      tx.objectStore(EVENTS).delete(id);
+      const index=tx.objectStore(RECEIPTS).index("eventId");
+      const req=index.getAllKeys(id);
+      req.onsuccess=()=>req.result.forEach(k=>tx.objectStore(RECEIPTS).delete(k));
+      tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+    });
+  },
+  async migrateOldDatabase(){
+    /* Read the previous app's database if it exists and convert it once. */
+    return new Promise(resolve=>{
+      let oldReq;
+      try{oldReq=indexedDB.open("ShopTrackerDB")}catch(e){return resolve()}
+      oldReq.onerror=()=>resolve();
+      oldReq.onsuccess=async e=>{
+        const old=e.target.result;
+        if(!old.objectStoreNames.contains("records")){old.close();return resolve()}
+        try{
+          const tx=old.transaction("records","readonly");
+          const req=tx.objectStore("records").getAll();
+          req.onsuccess=async()=>{
+            const oldRecords=req.result||[];
+            for(const r of oldRecords){
+              const type=r.type==="sale"||r.status==="sale"?"sale":(r.type==="visit"||r.status==="visited"?"visit":null);
+              if(!type)continue;
+              const event={
+                id:"migrated-"+r.id,
+                type,
+                shopName:r.shop||r.shopName||"Unknown shop",
+                productName:type==="sale"?(r.product||r.productName||""):"",
+                amount:type==="sale"&&Number.isFinite(Number(r.amount))?Number(r.amount):null,
+                location:r.lat!=null&&r.lon!=null?{latitude:Number(r.lat),longitude:Number(r.lon),accuracy:r.accuracy??null}:null,
+                createdAt:r.createdAt||new Date().toISOString(),
+                updatedAt:new Date().toISOString(),
+                migratedFrom:"ShopTrackerDB"
+              };
+              if(type==="sale" && r.receipt instanceof Blob){
+                const rid="receipt-"+event.id;
+                await DB.putReceipt({id:rid,eventId:event.id,blob:r.receipt,createdAt:event.createdAt});
+                event.receiptId=rid;
+              }else event.receiptId=null;
+              await DB.putEvent(event);
+            }
+            old.close();resolve();
+          };
+          req.onerror=()=>{old.close();resolve()};
+        }catch(e){old.close();resolve()}
+      };
+    });
+  }
+};
+
+/* ---------- Initialization ---------- */
 async function init(){
   try{
-    await openDB();
-    records=await idbAll();
-    records.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    await DB.open();
+    await DB.migrateOldDatabase();
+    records=await DB.getEvents();
+    normalizeAndSort();
+    showNotice(records.length?`Database ready • ${records.length} record${records.length===1?"":"s"}`:"Database ready");
     render();
   }catch(e){
     console.error(e);
-    alert("IndexedDB could not be opened in this browser.");
+    showNotice("IndexedDB could not be opened. Your browser may be blocking local storage.");
   }
 }
+function normalizeAndSort(){
+  records=records.filter(r=>r && (r.type==="visit"||r.type==="sale")).map(r=>({
+    ...r,
+    type:r.type,
+    shopName:String(r.shopName||"Unknown shop"),
+    productName:r.type==="sale"?String(r.productName||""):"",
+    amount:r.type==="sale"&&r.amount!=null?Number(r.amount):null
+  })).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+}
 
-/* =========================
-   Image compression
-   ========================= */
+/* ---------- UI Controller ---------- */
+function openForm(){
+  formCard.classList.remove("hidden");
+  setType("visit");
+  shopName.focus();
+}
+function closeForm(){resetForm();formCard.classList.add("hidden")}
+function setType(type){
+  currentType=type;
+  visitMode.classList.toggle("active",type==="visit");
+  saleMode.classList.toggle("active",type==="sale");
+  saleFields.classList.toggle("hidden",type!=="sale");
+  saveLabel.textContent=type==="sale"?"Sale":"Visit";
+  formStatus.textContent="";
+}
+function resetForm(){
+  shopName.value="";productName.value="";saleAmount.value="";
+  receiptInput.value="";receiptBlob=null;
+  if(receiptPreviewUrl)URL.revokeObjectURL(receiptPreviewUrl);
+  receiptPreviewUrl=null;receiptPreview.src="";receiptPreview.style.display="none";
+  receiptMeta.textContent="Image will be resized and compressed before IndexedDB storage.";
+  capturedLocation=null;locationText.textContent="Not captured yet";
+  formStatus.textContent="";
+}
+function showNotice(msg){
+  dbNotice.textContent=msg;dbNotice.classList.remove("hidden");
+  clearTimeout(showNotice.t);
+  showNotice.t=setTimeout(()=>dbNotice.classList.add("hidden"),2500);
+}
+
+/* ---------- Image pipeline ---------- */
 function compressImage(file){
   return new Promise((resolve,reject)=>{
-    if(!file.type.startsWith("image/")) return reject(new Error("Please select an image."));
-    const img=new Image(), reader=new FileReader();
-    reader.onload=()=>{img.src=reader.result};
-    reader.onerror=()=>reject(reader.error);
+    if(!file.type.startsWith("image/"))return reject(new Error("Select an image file."));
+    const img=new Image(),reader=new FileReader();
+    reader.onload=()=>img.src=reader.result;
+    reader.onerror=()=>reject(new Error("Could not read image."));
     img.onload=()=>{
       const maxSide=1100;
       const scale=Math.min(1,maxSide/Math.max(img.naturalWidth,img.naturalHeight));
@@ -192,162 +318,241 @@ function compressImage(file){
         resolve(blob);
       },"image/jpeg",.68);
     };
-    img.onerror=()=>reject(new Error("Could not read image."));
+    img.onerror=()=>reject(new Error("Invalid image."));
     reader.readAsDataURL(file);
   });
 }
 async function handleReceipt(e){
-  const file=e.target.files?.[0];
-  if(!file)return;
-  receiptMeta.textContent="Optimizing receipt…";
-  compressProgress.style.display="block";compressProgress.value=25;
+  const file=e.target.files?.[0];if(!file)return;
+  receiptMeta.textContent="Optimizing image…";
+  compressProgress.style.display="block";compressProgress.value=20;
   try{
     receiptBlob=await compressImage(file);
     compressProgress.value=100;
     if(receiptPreviewUrl)URL.revokeObjectURL(receiptPreviewUrl);
     receiptPreviewUrl=URL.createObjectURL(receiptBlob);
     receiptPreview.src=receiptPreviewUrl;receiptPreview.style.display="block";
-    receiptMeta.textContent=`Optimized: ${(file.size/1024).toFixed(0)} KB → ${(receiptBlob.size/1024).toFixed(0)} KB`;
-    setTimeout(()=>compressProgress.style.display="none",500);
+    receiptMeta.textContent=`Optimized ${(file.size/1024).toFixed(0)} KB → ${(receiptBlob.size/1024).toFixed(0)} KB`;
+    setTimeout(()=>compressProgress.style.display="none",450);
   }catch(err){
-    receiptBlob=null;receiptPreview.style.display="none";
+    receiptBlob=null;receiptInput.value="";receiptPreview.style.display="none";
     receiptMeta.textContent=err.message;
-    e.target.value="";
+    compressProgress.style.display="none";
   }
 }
 
-/* =========================
-   Form + GPS
-   ========================= */
-function toggleForm(){formCard.classList.toggle("hidden")}
-function statusChanged(){
-  saleFields.classList.toggle("hidden",status.value!=="sale");
-}
+/* ---------- GPS ---------- */
 function captureLocation(){
   if(!navigator.geolocation){alert("Geolocation is not supported.");return}
   locationText.textContent="Capturing high-accuracy GPS…";
   navigator.geolocation.getCurrentPosition(p=>{
-    capturedLocation={lat:p.coords.latitude,lon:p.coords.longitude,accuracy:p.coords.accuracy};
-    locationText.textContent=`${capturedLocation.lat.toFixed(6)}, ${capturedLocation.lon.toFixed(6)} • ±${Math.round(capturedLocation.accuracy)} m`;
-  },e=>{
+    capturedLocation={
+      latitude:p.coords.latitude,
+      longitude:p.coords.longitude,
+      accuracy:p.coords.accuracy,
+      capturedAt:new Date().toISOString()
+    };
+    locationText.textContent=`${capturedLocation.latitude.toFixed(6)}, ${capturedLocation.longitude.toFixed(6)} • ±${Math.round(capturedLocation.accuracy)} m`;
+  },err=>{
     locationText.textContent="Location unavailable";
-    alert("Location failed: "+e.message+"\n\nAllow location permission and try again.");
-  },{enableHighAccuracy:true,timeout:25000,maximumAge:0});
-}
-async function saveRecord(){
-  const name=shopName.value.trim(), type=status.value;
-  if(!name){alert("Enter the shop name.");return}
-  if(type==="sale"){
-    if(!product.value.trim()){alert("Enter the product name.");return}
-    if(amount.value==="" || Number(amount.value)<0){alert("Enter the sale amount.");return}
-  }
-  const record={
-    id:(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random()),
-    shop:name,status:type,
-    product:type==="sale"?product.value.trim():"",
-    amount:type==="sale"?Number(amount.value):null,
-    receipt: type==="sale" && receiptBlob ? receiptBlob : null,
-    lat:capturedLocation?.lat??null,
-    lon:capturedLocation?.lon??null,
-    accuracy:capturedLocation?.accuracy??null,
-    createdAt:new Date().toISOString()
-  };
-  try{
-    await idbPut(record);
-    records.unshift(record);
-    resetForm();
-    render();
-  }catch(e){
-    console.error(e);alert("Could not save the record to IndexedDB.");
-  }
-}
-function resetForm(){
-  shopName.value="";product.value="";amount.value="";receipt.value="";
-  status.value="visited";statusChanged();
-  receiptBlob=null;
-  if(receiptPreviewUrl)URL.revokeObjectURL(receiptPreviewUrl);
-  receiptPreviewUrl=null;receiptPreview.src="";receiptPreview.style.display="none";receiptMeta.textContent="";
-  capturedLocation=null;locationText.textContent="Not captured yet";
-  formCard.classList.add("hidden");
+    alert("Could not capture location: "+err.message+"\n\nPlease allow location permission and try again.");
+  },{enableHighAccuracy:true,timeout:30000,maximumAge:0});
 }
 
-/* =========================
-   Search / nearby
-   ========================= */
+/* ---------- Save operations ---------- */
+async function saveCurrent(){
+  const name=shopName.value.trim();
+  if(!name){alert("Enter the shop name.");shopName.focus();return}
+
+  if(currentType==="sale"){
+    const product=productName.value.trim();
+    const amount=Number(saleAmount.value);
+    if(!product){alert("Enter the product name.");productName.focus();return}
+    if(saleAmount.value===""||!Number.isFinite(amount)||amount<0){alert("Enter a valid sale amount.");saleAmount.focus();return}
+  }
+
+  const id=(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random());
+  const event={
+    id,
+    type:currentType,
+    shopName:name,
+    productName:currentType==="sale"?productName.value.trim():"",
+    amount:currentType==="sale"?Number(saleAmount.value):null,
+    receiptId:null,
+    location:capturedLocation?{...capturedLocation}:null,
+    createdAt:new Date().toISOString(),
+    updatedAt:new Date().toISOString()
+  };
+
+  try{
+    formStatus.textContent="Saving…";
+
+    if(currentType==="sale" && receiptBlob){
+      const receiptId="receipt-"+id;
+      await DB.putReceipt({id:receiptId,eventId:id,blob:receiptBlob,createdAt:event.createdAt});
+      event.receiptId=receiptId;
+    }
+
+    await DB.putEvent(event);
+
+    records.unshift(event);
+    normalizeAndSort();
+    closeForm();
+    render();
+    showNotice(currentType==="sale"?"✓ Sale saved":"✓ Visit saved");
+  }catch(err){
+    console.error(err);
+    formStatus.textContent="";
+    alert("Could not save this record: "+(err.message||"IndexedDB error"));
+  }
+}
+
+/* ---------- Search ---------- */
 function getSearchLocation(){
   if(!navigator.geolocation){alert("Geolocation is not supported.");return}
   searchLocation.textContent="Getting your location…";
   navigator.geolocation.getCurrentPosition(p=>{
-    searchLocation={lat:p.coords.latitude,lon:p.coords.longitude};
-    document.getElementById("searchLocation").textContent=`📍 ${searchLocation.lat.toFixed(5)}, ${searchLocation.lon.toFixed(5)}`;
+    searchLocation={latitude:p.coords.latitude,longitude:p.coords.longitude};
+    document.getElementById("searchLocation").textContent=`📍 ${searchLocation.latitude.toFixed(5)}, ${searchLocation.longitude.toFixed(5)}`;
     render();
-  },e=>alert("Could not get your location: "+e.message),{enableHighAccuracy:true,timeout:25000,maximumAge:0});
+  },e=>alert("Could not get your location: "+e.message),{enableHighAccuracy:true,timeout:30000,maximumAge:0});
 }
-function distanceKm(a,b){
-  if(!a||!b||a.lat==null||b.lat==null)return Infinity;
+function distanceFilterChanged(){
+  if(distanceFilter.value!=="all"&&!searchLocation){
+    getSearchLocation();
+    return;
+  }
+  render();
+}
+function haversine(a,b){
+  if(!a||!b)return Infinity;
   const R=6371,rad=x=>x*Math.PI/180;
-  const dLat=rad(b.lat-a.lat),dLon=rad(b.lon-a.lon);
-  const x=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
+  const dLat=rad(b.latitude-a.latitude),dLon=rad(b.longitude-a.longitude);
+  const x=Math.sin(dLat/2)**2+Math.cos(rad(a.latitude))*Math.cos(rad(b.latitude))*Math.sin(dLon/2)**2;
   return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
 function clearFilters(){
-  search.value="";typeFilter.value="all";distanceFilter.value="all";
-  searchLocation=null;document.getElementById("searchLocation").textContent="";render();
+  searchInput.value="";typeFilter.value="all";distanceFilter.value="all";
+  searchLocation=null;searchLocationEl.textContent="";render();
 }
-function formatDate(x){return new Date(x).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})}
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
-/* Blob -> object URL for display. */
-const objectUrls=new Map();
-function receiptUrl(blob,id){
-  if(!blob)return "";
-  if(!objectUrls.has(id))objectUrls.set(id,URL.createObjectURL(blob));
-  return objectUrls.get(id);
+/* ---------- Rendering ---------- */
+function formatDate(x){
+  return new Date(x).toLocaleString([], {dateStyle:"medium",timeStyle:"short"});
+}
+function esc(s){
+  return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+async function getReceiptUrl(event){
+  if(!event.receiptId)return null;
+  if(objectUrls.has(event.receiptId))return objectUrls.get(event.receiptId);
+  const r=await DB.getReceipt(event.receiptId);
+  if(!r?.blob)return null;
+  const url=URL.createObjectURL(r.blob);
+  objectUrls.set(event.receiptId,url);
+  return url;
 }
 function render(){
-  const q=search.value.trim().toLowerCase(), typ=typeFilter.value, max=distanceFilter.value;
+  totalCount.textContent=records.length;
+  saleCount.textContent=records.filter(r=>r.type==="sale").length;
+  visitCount.textContent=records.filter(r=>r.type==="visit").length;
+
+  const q=searchInput.value.trim().toLowerCase();
+  const typ=typeFilter.value;
+  const max=distanceFilter.value;
+
   let arr=records.filter(r=>{
-    if(typ!=="all"&&r.status!==typ)return false;
-    if(q&&!(`${r.shop} ${r.product||""}`.toLowerCase().includes(q)))return false;
+    if(typ!=="all"&&r.type!==typ)return false;
+    if(q&&!(`${r.shopName} ${r.productName}`.toLowerCase().includes(q)))return false;
     if(max!=="all"){
-      if(!searchLocation)return false;
-      if(distanceKm(searchLocation,{lat:r.lat,lon:r.lon})>Number(max))return false;
+      if(!searchLocation||!r.location)return false;
+      if(haversine(searchLocation,{latitude:r.location.latitude,longitude:r.location.longitude})>Number(max))return false;
     }
     return true;
   });
-  totalCount.textContent=records.length;
-  saleCount.textContent=records.filter(r=>r.status==="sale").length;
-  visitCount.textContent=records.filter(r=>r.status==="visited").length;
 
-  if(!arr.length){list.innerHTML='<div class="card empty">No matching records.<br><small>Add a visit or sale to start your history.</small></div>';return}
+  if(!arr.length){
+    list.innerHTML='<div class="card empty">No matching records.<br><small>Add a visit or sale to start your history.</small></div>';
+    return;
+  }
 
   list.innerHTML=arr.map(r=>{
-    const d=searchLocation&&r.lat!=null?distanceKm(searchLocation,{lat:r.lat,lon:r.lon}):null;
-    const receipt=r.receipt instanceof Blob ? `<img class="receipt-thumb" src="${receiptUrl(r.receipt,r.id)}" alt="Payment receipt">` : "";
-    return `<div class="card shop">
+    const d=searchLocation&&r.location?haversine(searchLocation,r.location):null;
+    return `<div class="card shop" id="record-${esc(r.id)}">
       <div class="shop-head">
-        <div><div class="shop-name">${esc(r.shop)}</div><div class="meta">${formatDate(r.createdAt)}</div></div>
-        <span class="badge ${r.status==="sale"?"sale":"visit"}">${r.status==="sale"?"SALE":"VISITED"}</span>
+        <div><div class="shop-name">${esc(r.shopName)}</div><div class="meta">${formatDate(r.createdAt)}</div></div>
+        <span class="badge ${r.type==="sale"?"sale":"visit"}">${r.type==="sale"?"SALE":"VISITED"}</span>
       </div>
-      ${r.status==="sale"?`<div class="sale-info">🛒 <b>${esc(r.product)}</b><br>💰 ₹${Number(r.amount).toLocaleString("en-IN",{minimumFractionDigits:2})}</div>`:""}
-      <div class="meta">📍 ${r.lat!=null?`${r.lat.toFixed(6)}, ${r.lon.toFixed(6)}${r.accuracy?` • ±${Math.round(r.accuracy)}m`:""}`:"No location captured"}${d!=null&&isFinite(d)?`<br>📏 ${d<1?(d*1000).toFixed(0)+" m":d.toFixed(2)+" km"} away`:""}</div>
-      ${receipt}
+      ${r.type==="sale"?`<div class="sale-info">🛒 <b>${esc(r.productName)}</b><br>💰 ₹${Number(r.amount).toLocaleString("en-IN",{minimumFractionDigits:2})}</div>`:""}
+      <div class="meta">📍 ${r.location?`${r.location.latitude.toFixed(6)}, ${r.location.longitude.toFixed(6)}${r.location.accuracy!=null?` • ±${Math.round(r.location.accuracy)}m`:""}`:"No location captured"}${d!=null&&isFinite(d)?`<br>📏 ${d<1?(d*1000).toFixed(0)+" m":d.toFixed(2)+" km"} away`:""}</div>
+      ${r.type==="sale"&&r.receiptId?`<div class="receipt-slot" data-receipt="${esc(r.receiptId)}"><small>Loading receipt…</small></div>`:""}
       <div class="actions">
-        ${r.lat!=null?`<button class="secondary" onclick="openMap(${r.lat},${r.lon})">🗺️ Map</button>`:""}
-        <button class="danger" onclick="deleteRecord('${r.id}')">Delete</button>
+        ${r.location?`<button class="secondary" onclick="openMap(${r.location.latitude},${r.location.longitude})">🗺️ Map</button>`:""}
+        ${r.type==="sale"&&r.receiptId?`<button class="secondary" onclick="viewReceipt('${esc(r.receiptId)}')">🧾 Receipt</button>`:""}
+        <button class="danger" onclick="deleteRecord('${esc(r.id)}')">Delete</button>
       </div>
     </div>`;
   }).join("");
+
+  loadReceiptPreviews(arr);
 }
-function openMap(lat,lon){window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`,"_blank")}
+async function loadReceiptPreviews(arr){
+  for(const r of arr){
+    if(r.type!=="sale"||!r.receiptId)continue;
+    const slot=document.querySelector(`[data-receipt="${CSS.escape(r.receiptId)}"]`);
+    if(!slot)continue;
+    const url=await getReceiptUrl(r);
+    if(url)slot.innerHTML=`<img class="receipt-thumb" src="${url}" alt="Payment receipt">`;
+    else slot.innerHTML="<small>Receipt unavailable</small>";
+  }
+}
+async function viewReceipt(receiptId){
+  const r=await DB.getReceipt(receiptId);
+  if(!r?.blob){alert("Receipt not found.");return}
+  const url=URL.createObjectURL(r.blob);
+  window.open(url,"_blank");
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+function openMap(lat,lon){
+  window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`,"_blank");
+}
 async function deleteRecord(id){
-  if(!confirm("Delete this record?"))return;
+  const r=records.find(x=>x.id===id);
+  if(!r)return;
+  if(!confirm(`Delete this ${r.type==="sale"?"sale":"visit"}?`))return;
   try{
-    await idbDelete(id);
-    const u=objectUrls.get(id);if(u){URL.revokeObjectURL(u);objectUrls.delete(id)}
-    records=records.filter(r=>r.id!==id);render();
+    await DB.deleteEvent(id);
+    if(r.receiptId&&objectUrls.has(r.receiptId)){URL.revokeObjectURL(objectUrls.get(r.receiptId));objectUrls.delete(r.receiptId)}
+    records=records.filter(x=>x.id!==id);
+    render();showNotice("Record deleted");
   }catch(e){alert("Could not delete record.")}
 }
+
+/* Cache DOM references after document is ready. */
+const formCard=document.getElementById("formCard");
+const visitMode=document.getElementById("visitMode");
+const saleMode=document.getElementById("saleMode");
+const shopName=document.getElementById("shopName");
+const productName=document.getElementById("productName");
+const saleAmount=document.getElementById("saleAmount");
+const receiptInput=document.getElementById("receiptInput");
+const receiptPreview=document.getElementById("receiptPreview");
+const receiptMeta=document.getElementById("receiptMeta");
+const compressProgress=document.getElementById("compressProgress");
+const locationText=document.getElementById("locationText");
+const saleFields=document.getElementById("saleFields");
+const saveLabel=document.getElementById("saveLabel");
+const formStatus=document.getElementById("formStatus");
+const searchInput=document.getElementById("searchInput");
+const typeFilter=document.getElementById("typeFilter");
+const distanceFilter=document.getElementById("distanceFilter");
+const searchLocationEl=document.getElementById("searchLocation");
+const list=document.getElementById("list");
+const totalCount=document.getElementById("totalCount");
+const saleCount=document.getElementById("saleCount");
+const visitCount=document.getElementById("visitCount");
+const dbNotice=document.getElementById("dbNotice");
+
 init();
 </script>
 </body>
