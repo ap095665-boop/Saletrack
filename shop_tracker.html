@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shop Visit & Sale Tracker</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e4e7ec;--accent:#5b5bd6;--green:#12a66a;--orange:#ed8b16;--red:#d92d20}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{max-width:760px;margin:auto;padding:16px 14px 90px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{font-size:22px;margin:0 0 3px}.sub{font-size:13px;color:var(--muted)}
+button,input,select{font:inherit}
+button{border:0;border-radius:12px;padding:11px 14px;font-weight:700;cursor:pointer}
+.primary{background:var(--accent);color:white}.secondary{background:#eef0ff;color:#4545a8}
+.danger{background:#fff0ef;color:var(--red)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:13px;box-shadow:0 2px 8px #10182808}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.filters input,.filters select,.form input,.form select{width:100%;border:1px solid var(--line);background:#fff;border-radius:11px;padding:12px;outline:none}
+.search{grid-column:1/-1}
+.section-title{font-size:13px;font-weight:800;margin:3px 0 10px;color:#475467;text-transform:uppercase;letter-spacing:.04em}
+.form{display:grid;gap:10px}.hidden{display:none}
+.row{display:flex;gap:9px}.row>*{flex:1}
+.locbox{background:#f7f8ff;border:1px dashed #aeb3ef;border-radius:13px;padding:11px;font-size:12px;color:#525b77}
+.locbox strong{display:block;color:var(--text);font-size:13px;margin-bottom:3px}
+#receiptPreview{max-width:100%;max-height:180px;border-radius:10px;display:none;margin-top:7px}
+.shop{position:relative}
+.shop-head{display:flex;justify-content:space-between;gap:10px}
+.shop-name{font-weight:800;font-size:17px}
+.badge{font-size:11px;font-weight:800;padding:5px 8px;border-radius:999px;white-space:nowrap}
+.badge.sale{background:#e8fff5;color:#08794f}.badge.visit{background:#fff4df;color:#9a5b00}
+.meta{color:var(--muted);font-size:12px;margin-top:7px;line-height:1.55}
+.sale-info{margin-top:10px;background:#f8fafc;border-radius:12px;padding:10px;font-size:13px}
+.receipt-thumb{display:block;margin-top:9px;max-width:150px;max-height:110px;border-radius:8px;border:1px solid var(--line)}
+.actions{display:flex;gap:7px;margin-top:11px}.actions button{padding:8px 10px;font-size:12px}
+.empty{text-align:center;padding:30px 15px;color:var(--muted)}
+.stats{display:flex;gap:8px;margin-bottom:13px}.stat{flex:1;background:white;border:1px solid var(--line);border-radius:14px;padding:11px}.stat b{display:block;font-size:19px}.stat span{font-size:11px;color:var(--muted)}
+small{color:var(--muted)}
+@media(max-width:520px){.filters{grid-template-columns:1fr}.search{grid-column:auto}.row{flex-direction:column}.stats{gap:6px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div><h1>Shop Tracker</h1><div class="sub">Local visit & sale history</div></div>
+  <button class="primary" onclick="toggleForm()">＋ Add</button>
+</header>
+
+<div class="stats">
+  <div class="stat"><b id="totalCount">0</b><span>Total records</span></div>
+  <div class="stat"><b id="saleCount">0</b><span>Sales</span></div>
+  <div class="stat"><b id="visitCount">0</b><span>Visits</span></div>
+</div>
+
+<div class="card form hidden" id="formCard">
+  <div class="section-title">New record</div>
+  <input id="shopName" placeholder="Shop name *" autocomplete="off">
+  <select id="status" onchange="statusChanged()">
+    <option value="visited">Visited</option>
+    <option value="sale">Sale</option>
+  </select>
+
+  <div id="saleFields" class="hidden">
+    <input id="product" placeholder="Product name *">
+    <input id="amount" type="number" min="0" step="0.01" placeholder="Amount (₹) *">
+    <label>
+      <small>Payment receipt (optional)</small>
+      <input id="receipt" type="file" accept="image/*" capture="environment" onchange="previewReceipt(event)">
+    </label>
+    <img id="receiptPreview" alt="Receipt preview">
+  </div>
+
+  <div class="locbox">
+    <strong>📍 Location</strong>
+    <span id="locationText">Not captured yet</span>
+  </div>
+  <div class="row">
+    <button class="secondary" type="button" onclick="captureLocation()">📍 Capture accurate location</button>
+    <button class="primary" type="button" onclick="saveRecord()">Save record</button>
+  </div>
+  <button class="danger" type="button" onclick="toggleForm()">Cancel</button>
+</div>
+
+<div class="card">
+  <div class="section-title">Find records</div>
+  <div class="filters">
+    <input class="search" id="search" placeholder="🔎 Search shop or product..." oninput="render()">
+    <select id="typeFilter" onchange="render()">
+      <option value="all">All records</option><option value="visited">Visited</option><option value="sale">Sales</option>
+    </select>
+    <select id="distanceFilter" onchange="render()">
+      <option value="all">All locations</option>
+      <option value="1">Within 1 km</option>
+      <option value="5">Within 5 km</option>
+      <option value="10">Within 10 km</option>
+      <option value="25">Within 25 km</option>
+    </select>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:9px">
+    <button class="secondary" onclick="getSearchLocation()">📍 Use my location</button>
+    <button class="danger" onclick="clearFilters()">Clear</button>
+  </div>
+  <div id="searchLocation" class="sub" style="margin-top:8px"></div>
+</div>
+
+<div id="list"></div>
+</div>
+
+<script>
+const KEY="shop_tracker_records_v1";
+let records=load();
+let capturedLocation=null;
+let searchLocation=null;
+let receiptData=null;
+
+function load(){
+  try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return []}
+}
+function persist(){localStorage.setItem(KEY,JSON.stringify(records))}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function toggleForm(){document.getElementById("formCard").classList.toggle("hidden")}
+function statusChanged(){document.getElementById("saleFields").classList.toggle("hidden",status.value!=="sale")}
+function previewReceipt(e){
+  const file=e.target.files?.[0]; if(!file)return;
+  if(file.size>4*1024*1024){alert("Please choose an image below 4 MB.");e.target.value="";return}
+  const r=new FileReader();r.onload=()=>{receiptData=r.result;receiptPreview.src=receiptData;receiptPreview.style.display="block"};r.readAsDataURL(file);
+}
+function captureLocation(){
+  if(!navigator.geolocation){alert("Geolocation is not supported by this browser.");return}
+  locationText.textContent="Capturing GPS location…";
+  navigator.geolocation.getCurrentPosition(p=>{
+    capturedLocation={lat:p.coords.latitude,lon:p.coords.longitude,accuracy:p.coords.accuracy};
+    locationText.textContent=`${capturedLocation.lat.toFixed(6)}, ${capturedLocation.lon.toFixed(6)} • accuracy ±${Math.round(capturedLocation.accuracy)} m`;
+  },e=>{
+    locationText.textContent="Location permission/error: "+e.message;
+    alert("Could not capture location. Allow location permission and try again.");
+  },{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+}
+function getSearchLocation(){
+  if(!navigator.geolocation){alert("Geolocation is not supported.");return}
+  searchLocation.textContent="Getting your location…";
+  navigator.geolocation.getCurrentPosition(p=>{
+    searchLocation={lat:p.coords.latitude,lon:p.coords.longitude};
+    document.getElementById("searchLocation").textContent=`Searching around ${searchLocation.lat.toFixed(5)}, ${searchLocation.lon.toFixed(5)}`;
+    render();
+  },e=>alert("Could not get your location: "+e.message),{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+}
+function distanceKm(a,b){
+  if(!a||!b)return Infinity;
+  const R=6371,rad=x=>x*Math.PI/180;
+  const dLat=rad(b.lat-a.lat),dLon=rad(b.lon-a.lon);
+  const x=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+function saveRecord(){
+  const name=shopName.value.trim(), type=status.value;
+  if(!name){alert("Enter the shop name.");return}
+  if(type==="sale" && (!product.value.trim() || amount.value==="")){alert("Enter product name and amount.");return}
+  const now=new Date();
+  records.unshift({
+    id:crypto.randomUUID?.()||Date.now()+"-"+Math.random(),
+    shop:name,status:type,
+    product:type==="sale"?product.value.trim():"",
+    amount:type==="sale"?Number(amount.value):null,
+    receipt:type==="sale"?receiptData:null,
+    lat:capturedLocation?.lat??null,lon:capturedLocation?.lon??null,accuracy:capturedLocation?.accuracy??null,
+    createdAt:now.toISOString()
+  });
+  persist(); resetForm(); render();
+}
+function resetForm(){
+  shopName.value="";product.value="";amount.value="";receipt.value="";
+  receiptData=null;receiptPreview.src="";receiptPreview.style.display="none";
+  capturedLocation=null;locationText.textContent="Not captured yet";
+  status.value="visited";statusChanged();toggleForm();
+}
+function clearFilters(){
+  search.value="";typeFilter.value="all";distanceFilter.value="all";
+  searchLocation=null;document.getElementById("searchLocation").textContent="";render();
+}
+function formatDate(x){return new Date(x).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})}
+function render(){
+  const q=search.value.trim().toLowerCase(), typ=typeFilter.value, max=distanceFilter.value;
+  let arr=records.filter(r=>{
+    if(typ!=="all"&&r.status!==typ)return false;
+    if(q&&!(`${r.shop} ${r.product}`.toLowerCase().includes(q)))return false;
+    if(max!=="all"){
+      if(!searchLocation)return false;
+      if(distanceKm(searchLocation,{lat:r.lat,lon:r.lon})>Number(max))return false;
+    }
+    return true;
+  });
+  totalCount.textContent=records.length;
+  saleCount.textContent=records.filter(r=>r.status==="sale").length;
+  visitCount.textContent=records.filter(r=>r.status==="visited").length;
+  const list=document.getElementById("list");
+  if(!arr.length){list.innerHTML='<div class="card empty">No matching records.<br><small>Add a shop visit or sale to start your local history.</small></div>';return}
+  list.innerHTML=arr.map(r=>{
+    const d=searchLocation&&r.lat!=null?distanceKm(searchLocation,{lat:r.lat,lon:r.lon}):null;
+    return `<div class="card shop">
+      <div class="shop-head"><div><div class="shop-name">${esc(r.shop)}</div><div class="meta">${formatDate(r.createdAt)}</div></div>
+      <span class="badge ${r.status==="sale"?"sale":"visit"}">${r.status==="sale"?"SALE":"VISITED"}</span></div>
+      ${r.status==="sale"?`<div class="sale-info"><b>${esc(r.product)}</b> · ₹${Number(r.amount).toLocaleString("en-IN",{minimumFractionDigits:2})}</div>`:""}
+      <div class="meta">📍 ${r.lat!=null?`${r.lat.toFixed(6)}, ${r.lon.toFixed(6)}${r.accuracy?` • ±${Math.round(r.accuracy)}m`:""}`:"No location captured"}${d!=null&&isFinite(d)?`<br>📏 ${d<1?(d*1000).toFixed(0)+" m":d.toFixed(2)+" km"} away`:""}</div>
+      ${r.receipt?`<img class="receipt-thumb" src="${r.receipt}" alt="Payment receipt">`:""}
+      <div class="actions">
+        ${r.lat!=null?`<button class="secondary" onclick="openMap(${r.lat},${r.lon})">🗺️ Map</button>`:""}
+        <button class="danger" onclick="deleteRecord('${r.id}')">Delete</button>
+      </div>
+    </div>`
+  }).join("");
+}
+function openMap(lat,lon){window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`,"_blank")}
+function deleteRecord(id){
+  if(confirm("Delete this record?")){records=records.filter(r=>r.id!==id);persist();render()}
+}
+render();
+</script>
+</body>
+</html>
